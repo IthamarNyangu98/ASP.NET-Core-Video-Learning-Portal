@@ -1,0 +1,40 @@
+﻿@page "/Registration"
+@using CareProLearning.Services
+@using CareProLearning.Models
+
+@inject IModuleService ModuleService
+
+<h4>Registration</h4>
+
+@if (modules == null)
+{
+    <div class="spinner"></div>
+}
+else
+{
+    <div class="row">
+        @foreach (var module in modules.Where(m => m.Category == "Registration"))
+        {
+            <div class="col-md-4">
+                <div class="card m-3">
+                    <div class="card-header">
+                        <h5>@module.Title</h5>
+                    </div>
+                    <img class="card-img-top imageThumbnail" src="@module.ThumbnailImagePath" />
+                    <div class="card-footer text-center">
+                        <a href="/video/@module.ModuleId" class="btn btn-primary">Watch Video</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<Module>? modules;
+
+    protected override async Task OnInitializedAsync()
+    {
+        modules = (await ModuleService.GetModules()).ToList();
+    }
+}

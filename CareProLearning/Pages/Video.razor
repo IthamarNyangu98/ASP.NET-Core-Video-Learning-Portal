@@ -1,0 +1,47 @@
+﻿@page "/video/{ModuleId:int}"
+@using CareProLearning.Services
+@using CareProLearning.Models
+@inject IModuleService ModuleService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<PageTitle>@module?.Title</PageTitle>
+
+@if (module is null)
+{
+    <div class="spinner"></div>
+}
+else
+{
+    <div class="container mt-4">
+        <h2>@module.Title</h2>
+        <p>@module.Description</p>
+        <div class="centered-video">
+        <video id="example_video" class="video-js vjs-default-skin" controls preload="auto" width="640" height="500" data-setup='{"playbackRates": [0.5, 1, 1.5, 2]}'>
+            <source src="@module.VideoUrl" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int ModuleId { get; set; }
+    private Module? module;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        module = await ModuleService.GetModule(ModuleId);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (module != null)
+        {
+            if (await JSRuntime.InvokeAsync<bool>("isElementPresent", "example_video"))
+            {
+                await JSRuntime.InvokeVoidAsync("initializeVideoJS", "example_video");
+            }
+        }
+    }
+}
