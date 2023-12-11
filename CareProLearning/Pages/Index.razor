@@ -1,46 +1,56 @@
 ﻿@page "/"
+@using CareProLearning.Services;
+@using CareProLearning.Models
+@inject IModuleService ModuleService
 @inject NavigationManager NavigationManager
 
 <PageTitle>CarePro Learning</PageTitle>
 
-<div class="container my-4">
-    <div class="card custom-dark-bg text-white">
-        <div class="card-body">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <h1>Welcome to CarePro Learning Portal</h1>
-                    <p>Discover a new way to manage healthcare with CarePro. Click the image to learn more.</p>
+@if (modules != null && modules.Any())
+{
+    <div class="container mt-3">
+        <div class="row">
+            @foreach (var module in modules)
+            {
+                <div class="col-md-4 mb-5">
+                    <div class="card h-100 video-card">
+                        <img class="card-img-top" src="@module.ThumbnailImagePath" alt="@module.Title">
+                        <h5 class="card-title px-3 pt-3">@module.Title</h5>
+                        <div class="card-overlay">
+                            <div class="overlay-content">
+                                <p class="card-text">@module.Description</p>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" style="width: @CalculateProgressWidth(module.ProgressInSeconds, module.LengthInSeconds)"></div>
+                                </div>
+                                <a href="/video/@module.ModuleId" class="btn btn-primary">Watch Video</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-lg-6">
-                    <img src="/images/DHW.jpg" alt="Welcome to CarePro" @onclick="NavigateToModule" class="img-fluid" />
-                </div>
-            </div>
+            }
         </div>
     </div>
-</div>
-
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-6">
-            <img src="/images/Training1.jpg" alt="Gallery Image 1" class="img-fluid" />
-        </div>
-        <div class="col-md-6">
-            <img src="/images/Training2.jpg" alt="Gallery Image 2" class="img-fluid" />
-        </div>
-    </div>
-</div>
-
-<div class="container my-4">
-    <div class="row">
-        <div class="col">
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-        </div>
-    </div>
-</div>
+}
+else
+{
+    <div class="spinner"></div>
+}
 
 @code {
-    private void NavigateToModule()
+    private List<Module>? modules;
+
+    protected override async Task OnInitializedAsync()
     {
-        NavigationManager.NavigateTo("/registration");
+        modules = (await ModuleService.GetModules()).ToList();
+    }
+
+    private string CalculateProgressWidth(double progressInSeconds, double totalLengthInSeconds)
+    {
+        if (totalLengthInSeconds == 0)
+        {
+            return "0%";
+        }
+        var progressPercentage = (progressInSeconds / totalLengthInSeconds) * 100;
+        return $"{progressPercentage}%";
     }
 }

@@ -4,44 +4,108 @@
 @inject IModuleService ModuleService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
+@implements IDisposable
 
 <PageTitle>@module?.Title</PageTitle>
 
-@if (module is null)
-{
-    <div class="spinner"></div>
-}
-else
-{
-    <div class="container mt-4">
-        <h2>@module.Title</h2>
-        <p>@module.Description</p>
-        <div class="centered-video">
-        <video id="example_video" class="video-js vjs-default-skin" controls preload="auto" width="640" height="500" data-setup='{"playbackRates": [0.5, 1, 1.5, 2]}'>
-            <source src="@module.VideoUrl" type="video/mp4">
-            Oops, looks your browser does not support the video tag.
-        </video>
-        </div>
-    </div>
-}
+<div class="container-fluid">
+	<div class="row border">
+		<div class="col-md-3 border-right d-flex flex-column custom-dark-bg">
+			<div class="list-group-header text-center">Module Content</div>
+			<div class="list-group flex-grow-1">
+				@if (videos != null)
+				{
+					@foreach (var video in videos)
+					{
+						<button class="list-group-item list-group-item-action"
+						@onclick="@(() => NavigateToVideo(video.ModuleId))">
+							@video.Title
+						</button>
+					}
+				}
+			</div>
+		</div>
+		<div class="col-md-9 d-flex flex-column">
+			@if (module is null)
+			{
+				<div class="spinner"></div>
+			}
+			else
+			{
+				<div class="centered-video flex-grow-1">
+					<video id="example_video"
+						   class="video-js vjs-default-skin"
+						   controls preload="auto"
+						   width="640" height="500"
+						   data-setup='{}'>
+						<source src="@module.VideoUrl" type="video/mp4">
+						Oops, looks your browser does not support the video tag.
+					</video>
+				</div>
+			}
+		</div>
+	</div>
+</div>
 
 @code {
-    [Parameter] public int ModuleId { get; set; }
-    private Module? module;
+	private DotNetObjectReference<Video> objectReference;
+	private bool isInteropReady = false;
 
-    protected override async Task OnParametersSetAsync()
-    {
-        module = await ModuleService.GetModule(ModuleId);
-    }
+	[Parameter] public int ModuleId { get; set; }
+	private Module? module;
+	private List<Module>? videos;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (module != null)
-        {
-            if (await JSRuntime.InvokeAsync<bool>("isElementPresent", "example_video"))
-            {
-                await JSRuntime.InvokeVoidAsync("initializeVideoJS", "example_video");
-            }
-        }
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		videos = (await ModuleService.GetModules()).ToList();
+		objectReference = DotNetObjectReference.Create(this);
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		if (module == null || module.ModuleId != ModuleId)
+		{
+			module = await ModuleService.GetModule(ModuleId);
+		}
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender || isInteropReady)
+		{
+			await JSRuntime.InvokeVoidAsync("disposeVideoPlayer", "example_video");
+			await JSRuntime.InvokeVoidAsync("initializeVideoPlayer", "example_video", objectReference);
+			isInteropReady = true;
+		}
+	}
+
+	public void Dispose()
+	{
+		objectReference?.Dispose();
+	}
+
+	private void NavigateToVideo(int moduleId)
+	{
+		NavigationManager.NavigateTo($"/video/{moduleId}", forceLoad: true);
+	}
+
+	[JSInvokable]
+	public async Task UpdateVideoProgress(string videoId, double progress, bool isCompleted)
+	{
+		if (module != null)
+		{
+			await ModuleService.UpdateProgress(module.ModuleId, progress, isCompleted);
+		}
+	}
+
+	[JSInvokable]
+	public async Task SetVideoLength(int moduleId, double lengthInSeconds)
+	{
+		var moduleToUpdate = await ModuleService.GetModule(moduleId);
+		if (moduleToUpdate != null)
+		{
+			moduleToUpdate.LengthInSeconds = lengthInSeconds;
+			await ModuleService.UpdateModule(moduleToUpdate);
+		}
+	}
 }

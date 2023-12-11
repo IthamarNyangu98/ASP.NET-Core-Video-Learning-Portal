@@ -8,6 +8,7 @@ namespace CareProLearning.Services
         Task<Module> GetModule(int moduleId);
         Task<Module> AddModule(Module module);
         Task<Module> UpdateModule(Module module);
+        Task UpdateProgress(int moduleId, double progressInSeconds, bool isCompleted);
         Task DeleteModule(int moduleId);
     }
 }

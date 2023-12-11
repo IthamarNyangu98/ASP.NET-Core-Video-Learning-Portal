@@ -29,6 +29,7 @@ namespace CareProLearning.Controllers
             }
         }
 
+
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Module>> GetModule(int id)
         {

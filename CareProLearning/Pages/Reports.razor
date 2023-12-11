@@ -4,7 +4,7 @@
 
 @inject IModuleService ModuleService
 
-<h4>MER Reports</h4>
+<h4 class="text-center mt-3">MER Reports</h4>
 
 @if (modules == null)
 {
@@ -12,21 +12,29 @@
 }
 else
 {
-    <div class="row">
-        @foreach (var module in modules.Where(m => m.Category == "Reports"))
-        {
-            <div class="col-md-4">
-                <div class="card m-3">
-                    <div class="card-header">
-                        <h5>@module.Title</h5>
-                    </div>
-                    <img class="card-img-top imageThumbnail" src="@module.ThumbnailImagePath" />
-                    <div class="card-footer text-center">
-                        <a href="/video/@module.ModuleId" class="btn btn-primary">Watch Video</a>
+    <div class="container mt-3">
+        <div class="row">
+            @foreach (var module in modules.Where(m => m.Category == "Reports"))
+            {
+                <div class="col-md-4 mb-5">
+                    <div class="card h-100 video-card">
+                        <img class="card-img-top" src="@module.ThumbnailImagePath" alt="@module.Title">
+
+                        <h5 class="card-title px-3 pt-3">@module.Title</h5>
+
+                        <div class="card-overlay">
+                            <div class="overlay-content">
+                                <p class="card-text">@module.Description</p>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" style="width: @CalculateProgressWidth(module.ProgressInSeconds, module.LengthInSeconds)"></div>
+                                </div>
+                                <a href="/video/@module.ModuleId" class="btn btn-primary">Watch Video</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
 }
 
@@ -36,5 +44,15 @@ else
     protected override async Task OnInitializedAsync()
     {
         modules = (await ModuleService.GetModules()).ToList();
+    }
+
+    private string CalculateProgressWidth(double progressInSeconds, double totalLengthInSeconds)
+    {
+        if (totalLengthInSeconds == 0)
+        {
+            return "0%";
+        }
+        var progressPercentage = (progressInSeconds / totalLengthInSeconds) * 100;
+        return $"{progressPercentage}%";
     }
 }

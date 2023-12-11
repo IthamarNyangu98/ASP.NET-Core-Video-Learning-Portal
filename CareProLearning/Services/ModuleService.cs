@@ -50,5 +50,15 @@ namespace CareProLearning.Services
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task UpdateProgress(int moduleId, double progressInSeconds, bool isCompleted)
+        {
+            var module = await _context.Modules.FindAsync(moduleId);
+            if (module != null)
+            {
+                module.ProgressInSeconds = progressInSeconds;
+                module.IsCompleted = isCompleted;
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

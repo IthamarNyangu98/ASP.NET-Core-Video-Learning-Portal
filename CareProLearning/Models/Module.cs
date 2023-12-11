@@ -8,5 +8,9 @@
         public string? VideoUrl { get; set; }
         public string? ThumbnailImagePath { get; set; }
         public string? Category { get; set; }
+        public double ProgressInSeconds { get; set; }
+        public bool IsCompleted { get; set; }
+        public double LengthInSeconds { get; set; }
+
     }
 }

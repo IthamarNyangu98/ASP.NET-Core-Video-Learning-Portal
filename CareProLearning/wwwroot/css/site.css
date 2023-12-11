@@ -2,7 +2,7 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    background-color: #f6f9ff;
+    background-color: #dddddd;
     height: 100%;
     margin: 0;
 }
@@ -16,7 +16,8 @@ h4 {
 }
 
 h5 {
-    color: #4a7fbd
+    color: #4a7fbd;
+    font-family: 'Times New Roman', serif;
 }
 
 a, .btn-link {
@@ -160,4 +161,187 @@ a, .btn-link {
         color: inherit; 
     }
 
+.card:hover {
+    transform: scale(1.03);
+    transition: all 0.3s ease-in-out;
+}
+
+.video-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    transition: .5s ease;
+    background-color: rgba(0, 0, 0, 0.6); 
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.video-card:hover .card-overlay {
+    opacity: 1;
+}
+
+.overlay-content {
+    text-align: center;
+}
+
+.card-img-top {
+    width: 100%;
+    height: 200px;
+    object-fit: cover; 
+}
+
+
+.video-card:hover {
+    transform: scale(1.08); 
+    z-index: 10; 
+}
+
+
+.col-md-4 {
+    margin-bottom: 80px; 
+}
+
+.card-title {
+    color: #333; 
+    font-size: 1.1rem; 
+}
+
+.card-overlay {
+   
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+
+.video-card:hover .card-overlay {
+    opacity: 1;
+}
+
+.overlay-content {
+    text-align: center;
+}
+
+.list-group-header {
+    padding: 10px 0;    
+    color: #dadada;
+    font-size: 1.2rem;
+}
+
+.centered-video {
+    padding: 20px 0;
+}
+
+.custom-dark-bg {
+    background-color: #c4c4c4; 
+}
+
+.custom-dark-bg .list-group-item {
+        color: black;
+}
+
+.card-overlay .btn-primary {
+    margin-top: 10px; 
+}
+
+
+.card-overlay .progress {
+    height: 5px; 
+    margin-bottom: 10px; 
+}
+
+.card-title-container {
+    background-color: #fff;   
+}
+
+.card-overlay .btn-primary {
+    padding: 5px 10px; 
+    font-size: 0.8rem; 
+}
+
+.progress-container {
+    max-width: 200px; 
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    height: 5px; 
+    transition: width .6s ease;
+}
+
+.list-group-item {
+    display: flex;
+    flex-direction: row; 
+    padding: 10px;
+    transition: background-color 0.2s; 
+    background-color: transparent;
     
+}
+
+    .list-group-item img {
+        width: 30%;
+        height: auto; 
+        margin-right: 10px;
+    }
+
+.list-group-item-action:hover {
+    background-color: #f8f9fa; 
+}
+
+.list-group-item .progress {
+    width: 100%; 
+    height: 5px; 
+}
+
+.list-group-item:hover .imageThumbnail::after {
+     
+    font-family: 'open-iconic-bootstrap';
+    
+    font-size: 2em; 
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    
+    padding: 1em; 
+    border-radius: 50%;
+    display: block;
+   
+}
+
+.list-group-item .imageThumbnail::after {
+    display: none;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background-color: #e2e2e2; 
+    margin: 0; 
+}
+
+.d-flex {
+    align-items: center; 
+}
+
+.imageThumbnail {
+    object-fit: cover; 
+    border-radius: 0.25rem; 
+    max-width: 300px; 
+    max-height: 300px; 
+}

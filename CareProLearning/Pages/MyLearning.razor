@@ -1,0 +1,47 @@
+﻿@page "/MyLearning"
+@using CareProLearning.Services
+@using CareProLearning.Models
+@inject IModuleService ModuleService
+
+<div class="container mt-4">
+	<h4 style="text-align:center">My Learning</h4>
+	@if (modules is null)
+	{
+		<div class="spinner"></div>
+	}
+	else
+	{
+		<div class="list-group">
+			@foreach (var module in modules)
+			{
+				<a href="/video/@module.ModuleId" class="list-group-item list-group-item-action flex-column align-items-start">
+					<div class="d-flex w-100 justify-content-start">
+						<img src="@module.ThumbnailImagePath" class="img-fluid rounded imageThumbnail" alt="@module.Title" />
+						<div class="d-flex flex-column justify-content-between ml-3">
+							<h5 class="mb-1">@module.Title</h5>
+							<small>@module.Description</small>
+							<div class="progress my-2" style="width: 180px;">
+								<div class="progress-bar" role="progressbar" style="width: @CalculateProgressWidth(module.ProgressInSeconds, module.LengthInSeconds)" aria-valuenow="@module.ProgressInSeconds" aria-valuemin="0" aria-valuemax="@module.LengthInSeconds"></div>
+							</div>
+						</div>
+					</div>
+				</a>
+				<div class="dropdown-divider"></div>
+			}
+		</div>
+	}
+</div>
+
+@code {
+	private List<Module>? modules;
+
+	protected override async Task OnInitializedAsync()
+	{
+		modules = (await ModuleService.GetModules()).ToList();
+	}
+
+	private string CalculateProgressWidth(double progressInSeconds, double totalLengthInSeconds)
+	{
+		return $"{(progressInSeconds / totalLengthInSeconds) * 100}%";
+	}
+}
